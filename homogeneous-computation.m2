@@ -3,7 +3,7 @@ needsPackage("SchurRings");
 load "general.m2";
 load "homogeneous-methods.m2";
 
--- the Fano 3-folds for which the toric methods don't apply
+-- 13 Fano 3-folds for which the toric methods don't apply, plus 9-1
 load "homogeneous-description.m2";
 
 -- The main computational part: the cohomology of the second exterior power of
@@ -16,12 +16,12 @@ load "homogeneous-description.m2";
 -- (d) recombine everything to get the result
 computeBivectorCohomology = method()
 computeBivectorCohomology(List, List) := (F, E) -> (
-  -- we compute the line bundle whose restriction will be the canonical bundle of the zero locus of `F`
+  -- we compute the line bundle whose restriction will be the canonical bundle of the zero locus of `E*`
   omega := canonicalOfZeroLocus(F, E);
 
   -- we twist the elements of the conormal sequence by `omega^*`
   -- in our notation this means substracting and rescaling
-  -- the first term in the conormal sequence is the conormal bundle `F`, which we already have
+  -- the first term in the conormal sequence is the conormal bundle `E`, which we already have
   conormalTwisted := E / (f -> (
     fTwisted := f - omega;
     apply(fTwisted, fT -> fT / (g -> g - min(fT)))

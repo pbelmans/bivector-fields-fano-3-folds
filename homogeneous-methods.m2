@@ -120,7 +120,8 @@ TEST ///
 -- compute the canonical bundle of a zero locus on a product of Grassmannians before restriction
 canonicalOfZeroLocus = method ()
 canonicalOfZeroLocus(List, List) := (X, F) -> (
-  -- this is the top exterior power of the bundle and sum it with the top exterior of the cotangent bundle of the product of Grassmannians
+  -- warning: the function returns the canonical bundle of the zero locus of a section of F*
+  -- we compute the top exterior power of F and subtract it from the top exterior of the cotangent bundle of the product of Grassmannians
 
   -- compute the top exterior power of the bundle `F`
   FSchur := toSchurRingsNotation(X, F);
@@ -136,11 +137,11 @@ canonicalOfZeroLocus(List, List) := (X, F) -> (
   canonicalSchur :=  exteriorPower(dim cotangentSchur, cotangentSchur);
   canonical := toListNotation(canonicalSchur);
 
-  -- adjunction formula
+  -- adjunction formula for F*
   result := canonical_0 - detF_0;
 
   -- adding an integer to every element of a list does not change the bundle the list represents, so we can rescale the lists to simplify
-  return result / (b -> (apply(b, bi -> bi - min(b))));
+  result / (b -> (apply(b, bi -> bi - min(b))))
 );
 TEST ///
   X = {{2, 4}, {2, 5}};
@@ -156,33 +157,31 @@ TEST ///
 -- otherwise {i, d}, meaning that the ith cohomology has dimension d
 BorelWeilBott = method()
 BorelWeilBott(List) := (L) -> (
-  n := #L;
+  -- notation: the list L of length b is thought as the merge of alpha and beta, and we want to know the cohomology of S_alpha Q \otimes S_beta U for Q, U tautological bundles of ranks b-a, a on a Grassmannian Gr(a,b)
+
+  -- we create a schurRing R to be able to compute the dimension of the representations corresponding to the cohomology groups
   s := symbol s;
-  R := schurRing(QQ, s, n);
-  D := reverse(apply(n, i -> i));
+  R := schurRing(QQ, s, #L);
+
+  -- following BWB for Grassmannians, we add L to the sequence D := (b-1, ..., 0) and we check whether we have a repetition
+  D := reverse(apply(#L, i -> i));
   LD := L+D;
-  rep:= #(unique LD);
-  if (rep) != n then {-1,-1} else (
+  rep := #L-#(unique LD);
+
+  -- if we have a repetition, then the bundle if acyclic
+  if (rep) > 0 then {-1,-1} else (
+    -- otherwise it will have exactly one non-vanishing cohomology group. We have to compute the length of the permutation sigma such that sigma(LD)-D is non-increasing
+    nOfReflections := 0;
+    for i from 0 to #L - 1 do (for j from i + 1 to #L -1 do (if LD_i < LD_j then nOfReflections = nOfReflections + 1));
     W := (reverse sort LD) - D;
-    m := min W;
-    if m > 0 then (
-      gam := toSequence W;
-      LSUB := L - apply(n, i -> i + 1);
-      CO := 0;
-      for i from 0 to #L - 1 do (for j from i + 1 to #L -1 do (if LSUB_i < LSUB_j then CO = CO + 1));
-      {CO,dim (s_gam)}
-    ) else (
-      MINL := apply(n, i -> -m);
-      W2 := W + MINL;
-      gam2 := toSequence W2;
-      LSUB = L - apply(n, i -> i + 1);
-      CO = 0;
-      for i from 0 to #L - 1 do (for j from i + 1 to #L - 1 do (if LSUB_i < LSUB_j then CO = CO+1));
-      {CO, dim (s_gam2)}
+
+    -- the dimension of the cohomology group is the dimension of the Schur module s_W
+    dimSW := dim (s_(toSequence(W)));
+    {nOfReflections,dimSW}
     )
   )
-)
 TEST ///
+  needsPackage "SchurRings"
   L={2,1,1,1,1,1,1,1,0,0}
   BorelWeilBott L
   L={3,3,3,1,0}
@@ -190,9 +189,10 @@ TEST ///
   L={1,0,2}
   BorelWeilBott L
   L={2,1,1}
-  BorelWeilBott({3,0,3})
-  BorelWeilBott({1,0,1})
-///
+  BorelWeilBott L
+  L={3,0,3}
+  BorelWeilBott L
+  ///
 
 
 -- Method:
@@ -200,7 +200,7 @@ TEST ///
 kunneth = method()
 kunneth(List) := (divVect) -> (
   kun := apply(divVect, l -> BorelWeilBott(l));
-  return if all(kun, k -> first k >= 0) then ({sum apply(kun, k -> first k),product apply(kun,k -> last k)}) else {-1, -1};
+  if all(kun, k -> first k >= 0) then ({sum apply(kun, k -> first k),product apply(kun,k -> last k)}) else {-1, -1}
 )
 TEST ///
   divVect = {{1,0,2}, {3,0,3}, {2,1,1}};
