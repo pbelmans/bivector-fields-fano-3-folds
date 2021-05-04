@@ -4,7 +4,7 @@ It accompanies the paper
 
     Belmans--Fatighenti--Tanturri, Polyvector fields for Fano 3-folds
 
-available at (arXiv link to be added once it is uploaded).
+available at [arXiv:2104.07626](https://arxiv.org/abs/2104.07626)
 
 
 It is a combination of two methods:
@@ -19,7 +19,7 @@ We will document some implementation details of these two computations below. Be
 Bibliography
 ------------
 * [[MR3470714](https://mathscinet.ams.org/mathscinet-getitem?mr=3470714)] Tom Coates, Alessio Corti, Sergey Galkin and Alexander Kasprzyk, Quantum periods for 3-dimensional Fano manifolds. Geom. Topol. 20 (2016), no. 1, 103–256.
-* [[2009.13382]](https://arxiv.org/abs/2009.13382) Lorenzo De Biase, Enrico Fatighenti and Fabio Tanturri, Fano 3-folds from homogeneous vector bundles over Grassmannians. available as arXiv:2009.13382
+* [[2009.13382]](https://arxiv.org/abs/2009.13382) Lorenzo De Biase, Enrico Fatighenti and Fabio Tanturri, Fano 3-folds from homogeneous vector bundles over Grassmannians.
 
 
 Toric complete intersections
